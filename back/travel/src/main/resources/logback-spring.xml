@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <property name="CONSOLE_PATTERN" value="[%X{request_id:-no_request_id}] [%d{yyyy-MM-dd HH:mm:ss.SSS}] %magenta([%thread]) %highlight([%-3level]) [%logger{5} line: %L] - [%msg] %n" />
+    <property name="ROLLING_PATTERN" value="[%X{request_id:-no_request_id}] [%d{yyyy-MM-dd HH:mm:ss.SSS}] %magenta([%thread]) %highlight([%-3level]) [%logger{5} line: %L] - [%msg] %n" />
+    <property name="FILE_NAME" value="./logs/app.log" />
+    <property name="LOG_NAME_PATTERN" value="./logs/app-%d{yyyy-MM-dd-HH-mm}.%i.log" />
+    <property name="MAX_FILE_SIZE" value="10MB" />
+    <property name="TOTAL_SIZE" value="1GB" />
+    <property name="MAX_HISTORY" value="10" />
+
+    <!-- Console Appender 설정 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>${CONSOLE_PATTERN}</Pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log File Appender 설정 -->
+    <appender name="ROLLING_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${ROLLING_PATTERN}</pattern>
+        </encoder>
+        <file>${FILE_NAME}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_NAME_PATTERN}</fileNamePattern>
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <totalSizeCap>${TOTAL_SIZE}</totalSizeCap>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- JPA 쿼리 로거 설정 -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additive="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING_LOG_FILE" />
+    </logger>
+
+    <!-- 서버 운영 로거 설정 -->
+    <logger name="com.kh.travel.user" level="INFO" additive="true">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING_LOG_FILE" />
+    </logger>
+
+    <!-- 루트 로거 설정 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING_LOG_FILE" />
+    </root>
+</configuration>
